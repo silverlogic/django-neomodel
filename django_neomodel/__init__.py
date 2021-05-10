@@ -7,7 +7,7 @@ from django.forms import fields
 from django.db.models.options import Options
 from django.core.exceptions import ValidationError
 
-from neomodel import RequiredProperty, DeflateError, StructuredNode
+from neomodel import RequiredProperty, DeflateError, StructuredNode, UniqueIdProperty
 
 
 __author__ = 'Robin Edwards'
@@ -39,12 +39,22 @@ class DjangoField(object):
     concrete = True
     editable = True
     creation_counter = 0
+    unique = False
+    primary_key = False
 
     def __init__(self, prop, name):
         self.prop = prop
 
         self.name = name
+        self.remote_field = name
+        self.attname = name
         self.help_text = getattr(prop, 'help_text', '')
+
+        if isinstance(prop, UniqueIdProperty):
+            # this seems that can be implemented in neomodel
+            # django-neomodel does have the needed code already but neomodel does not support
+            prop.primary_key = True
+
         self.primary_key = getattr(prop, 'primary_key', False)
         self.label = prop.label if prop.label else name
 
@@ -203,4 +213,8 @@ class DjangoNode(StructuredNode):
     def post_delete(self):
         if getattr(settings, 'NEOMODEL_SIGNALS', True):
             signals.post_delete.send(sender=self.__class__, instance=self)
+
+    @property
+    def pk(self):
+        return self.id
 

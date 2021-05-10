@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
 
     # Third party
     'django_neomodel',
@@ -68,4 +69,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
 ]
+
+STATIC_ROOT = "./static/"
+STATIC_URL = '/static/'
 
