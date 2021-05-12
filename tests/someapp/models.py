@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models.base import ModelBase
 from django_neomodel import DjangoNode
+from django_neomodel.models import NeoModel
 from neomodel import StringProperty, DateTimeProperty, UniqueIdProperty
 from neomodel.core import NodeMeta
 from neomodel.match import NodeSet
@@ -13,25 +14,6 @@ class Library(models.Model):
 
     class Meta:
         app_label = 'someapp'
-
-
-class FakeQuery:
-    select_related = False
-    order_by = ['uid']
-
-
-class NeoNodeSet(NodeSet):
-    query = FakeQuery()
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.model = self.source
-
-    def count(self):
-        return 1
-
-    def _clone(self):
-        return self
 
 
 class NeoManager:
@@ -70,29 +52,33 @@ class Metaclass(NodeMeta):
     #      return NeoManager(cls)
 
 
-DjangoNodeWithAdmin = Metaclass('DjangoNodeWithAdmin', (DjangoNode,), {'__abstract_node__': True})
+#  DjangoNodeWithAdmin = Metaclass('DjangoNodeWithAdmin', (DjangoNode,), {'__abstract_node__': True})
 
 
-class Book(DjangoNodeWithAdmin):
-    uid = UniqueIdProperty()
-    pk = UniqueIdProperty(primary_key=True)
+#  class Book(DjangoNodeWithAdmin):
+#      uid = UniqueIdProperty()
+#      pk = UniqueIdProperty(primary_key=True)
+#      title = StringProperty(unique_index=True)
+#      format = StringProperty(required=True)  # check required field can be omitted on update
+#      status = StringProperty(choices=(
+#              ('available', 'A'),
+#              ('on_loan', 'L'),
+#              ('damaged', 'D'),
+#          ), default='available', coerce=str)
+#      created = DateTimeProperty(default=datetime.utcnow)
+
+#      class Meta:
+#          verbose_name = "Book"
+#          verbose_name_plural = "Books"
+
+#      #  _default_manager = NeoManager()
+
+#      def serializable_value(self, attr):
+#          return str(getattr(self, attr))
+
+#      class Meta:
+#          app_label = 'someapp'
+
+
+class Book(NeoModel):
     title = StringProperty(unique_index=True)
-    format = StringProperty(required=True)  # check required field can be omitted on update
-    status = StringProperty(choices=(
-            ('available', 'A'),
-            ('on_loan', 'L'),
-            ('damaged', 'D'),
-        ), default='available', coerce=str)
-    created = DateTimeProperty(default=datetime.utcnow)
-
-    class Meta:
-        verbose_name = "Book"
-        verbose_name_plural = "Books"
-
-    #  _default_manager = NeoManager()
-
-    def serializable_value(self, attr):
-        return str(getattr(self, attr))
-
-    class Meta:
-        app_label = 'someapp'
