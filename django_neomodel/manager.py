@@ -18,6 +18,9 @@ class NeoNodeSet(NodeSet):
         super().__init__(*args, **kwargs)
         self.model = self.source
 
+    #  def order_by(self, *fields):
+    #      return self
+
     def count(self):
         return 1
 
@@ -31,6 +34,7 @@ class NodeModelManager(models.Manager):
         print(args)
         print(kwargs)
         super(NodeModelManager, self).__init__()
+        #  print(self.source)
         self._using = None
         self.model = None
         self._inherited = False

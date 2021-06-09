@@ -4,7 +4,8 @@ from django.db import models
 from django.db.models.base import ModelBase
 from django_neomodel import DjangoNode
 from django_neomodel.models import NeoModel
-from neomodel import StringProperty, DateTimeProperty, UniqueIdProperty
+from django_neomodel.fields import StringProperty
+from neomodel import DateTimeProperty, UniqueIdProperty
 from neomodel.core import NodeMeta
 from neomodel.match import NodeSet
 

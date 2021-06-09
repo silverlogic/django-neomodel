@@ -41,9 +41,9 @@ class BaseManagerBase:
 
 
 class NeoModelBase(BaseManagerBase, type(dj_models.Model), NodeMeta):
-    def __new__(cls, name, bases, attrs):
+    def __new__(cls, name, bases, attrs,*args, **kwargs):
         super_new = super().__new__
-        new_cls = super_new(cls, name, bases, attrs)
+        new_cls = super_new(cls, name, bases, attrs, *args, **kwargs)
         #  import pdb; pdb.set_trace()
         #  setattr(new_cls, "_default_manager", NodeModelManager(new_cls))
         if not new_cls._meta.abstract:
@@ -52,7 +52,7 @@ class NeoModelBase(BaseManagerBase, type(dj_models.Model), NodeMeta):
         return new_cls
 
 
-class DjangoNeoModel(StructuredNode, dj_models.Model, metaclass=NeoModelBase):
+class DjangoNeoModel(dj_models.Model, StructuredNode, metaclass=NeoModelBase):
     __abstract_node__ = True
 
     class Meta:
@@ -63,10 +63,16 @@ class DjangoNeoModel(StructuredNode, dj_models.Model, metaclass=NeoModelBase):
 class NeoModel(DjangoNeoModel):
     objects = NodeModelManager()
     #  _default_manager = NodeModelManager()
-
-    pk = id = UniqueIdProperty()
+    id = UniqueIdProperty(db_property="id")
+    #  pk = UniqueIdProperty(db_property="id")
 
     __abstract_node__ = True
 
     class Meta:
         abstract = True
+
+    @classmethod
+    def defined_properties(cls, **kwargs):
+        props = super().defined_properties(**kwargs)        
+        #  import pdb; pdb.set_trace()
+        return props
